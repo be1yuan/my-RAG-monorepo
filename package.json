@@ -5,9 +5,18 @@
         "dev": "pnpm -r --parallel run dev",
         "build": "pnpm -r run build",
         "lint": "pnpm -r run lint",
-        "clean": "pnpm -r run clean"
+        "clean": "pnpm -r run clean",
+        "dev:frontend": "pnpm -r run dev:frontend",
+        "build:frontend": "pnpm -r run build:frontend",
+        "lint:frontend": "pnpm -r run lint:frontend"
     },
     "engines": {
         "node": ">=18.0.0"
+    },
+    "devDependencies": {
+        "@types/node": "^26.0.0",
+        "eslint": "^10.5.0",
+        "prettier": "3.8.4",
+        "typescript": "^6.0.3"
     }
 }

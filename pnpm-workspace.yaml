@@ -1,5 +1,12 @@
 packages:
   - "apps/*"
   - "packages/*"
-allowBuilds:
-  esbuild: false
+  - "!**/test/**" 
+link-workspace-packages: true
+onlyBuiltDependencies:
+  - esbuild
+  - esbuild-wasm
+# 共享依赖锁定
+shared-workspace-lockfile: true
+# 保存精确版本
+save-workspace-protocol: true

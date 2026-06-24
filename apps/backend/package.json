@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsx watch src/app.ts",
+    "build": "tsc",
+    "start": "node dist/app.js"
   },
   "keywords": [],
   "author": "",
@@ -18,6 +21,7 @@
     "drizzle-orm": "^0.45.2",
     "hono": "^4.12.27",
     "pg": "^8.22.0",
+    "shared-types": "workspace:*",
     "zod": "^4.4.3"
   },
   "devDependencies": {
