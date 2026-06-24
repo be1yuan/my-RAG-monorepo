@@ -1,6 +1,6 @@
 import {
     pgTable, pgEnum, uuid, varchar, text, integer, bigint, jsonb, timestamp,
-    index, uniqueIndex, vector, customType, type AnyPgColumn,
+    index, uniqueIndex, vector, customType
 } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 

@@ -1,11 +1,33 @@
 import { Hono } from "hono"
 import { serve } from "@hono/node-server"
 import { config } from "./config"
-import { db, checkDbConnection, closeDb } from './db/client'  
-import { knowledgeBases }  from './db/schema'
+import { checkDbConnection, closeDb } from './db/client'  
+import { errorHandler} from "./errors"
+import { kbsRouter } from "./routes/kbs"
 
+// ⭐ 声明 Hono context 变量类型
+type AppEnv = {
+  Variables: {
+    requestId: string;
+  }
+}
 
-const app = new Hono()
+// ============ 创建 app ============
+const app = new Hono<AppEnv>()
+
+// ============ 全局中间件 ============
+app.use("*", async (c, next) => {
+  // 给每个请求一个 ID(用于日志关联)
+  const requestId = c.req.header('X-Request-Id') || crypto.randomUUID()
+  c.set('requestId', requestId)
+  c.header('X-Request-Id', requestId)
+  await next()
+})
+
+// 全局错误兜底(综合 P0-4)
+app.onError(errorHandler)
+
+// ============ 路由 ============
 
 //健康检查
 app.get("/api/health", async (c) => {
@@ -20,20 +42,22 @@ app.get("/api/health", async (c) => {
   })
 })
 
+app.route("/", kbsRouter)
+
 //列出知识库
-app.get("/api/kbs", async (c) => {
-  try {
-    const kbs = await db.select().from(knowledgeBases).limit(10)
-    return c.json({ kbs })
-  } catch (error) {
-    // ✅ 类型守卫：检查 error 是否为 Error 实例
-    if (error instanceof Error) {
-      return c.json({ error: error.message })
-    }
-    // ✅ 处理未知类型
-    return c.json({ error: 'An unknown error occurred' })
-  }
-})
+// app.get("/api/kbs", async (c) => {
+//   try {
+//     const kbs = await db.select().from(knowledgeBases).limit(10)
+//     return c.json({ kbs })
+//   } catch (error) {
+//     // ✅ 类型守卫：检查 error 是否为 Error 实例
+//     if (error instanceof Error) {
+//       return c.json({ error: error.message })
+//     }
+//     // ✅ 处理未知类型
+//     return c.json({ error: 'An unknown error occurred' })
+//   }
+// })
 
 //关闭数据库连接
 process.on('SIGTERM', async () => {

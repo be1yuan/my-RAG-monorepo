@@ -1,11 +1,11 @@
 {
   "extends": "../../tsconfig.base.json",
-  "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
+  "include": ["env.d.ts", "src/**/*", "src/**/*.vue","auto-imports.d.ts","env.d.ts"],
   "exclude": ["src/**/__tests__/*"],
   "compilerOptions": {
     // Extra safety for array and object lookups, but may have false positives.
     "noUncheckedIndexedAccess": true,
-
+    // ⭐ 让 backend 直接读 shared-types 的源码,而不是编译产物
     // Path mapping for cleaner imports.
     "paths": {
       "@/*": ["./src/*"]
@@ -14,5 +14,8 @@
     // `vue-tsc --build` produces a .tsbuildinfo file for incremental type-checking.
     // Specified here to keep it out of the root directory.
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo"
-  }
+  },
+  "references": [
+    { "path": "../../packages/shared-types" }
+  ]
 }

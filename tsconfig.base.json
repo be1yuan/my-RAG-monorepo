@@ -31,5 +31,5 @@
             "shared-types/*": ["./packages/shared-types/src/*"]
         }
     },
-    "references": [{ "path": "./apps/backend" }, { "path": "./packages/shared-types" }],
+    // "references": [{ "path": "./apps/backend" }, { "path": "./packages/shared-types" }],
 }
