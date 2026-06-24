@@ -6,6 +6,7 @@
         "build": "pnpm -r run build",
         "lint": "pnpm -r run lint",
         "clean": "pnpm -r run clean",
+        "typecheck": "pnpm -r typecheck",
         "dev:frontend": "pnpm -r run dev:frontend",
         "build:frontend": "pnpm -r run build:frontend",
         "lint:frontend": "pnpm -r run lint:frontend"

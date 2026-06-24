@@ -1,11 +1,15 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ErrorCode, KnowledgeBaseCreateSchema } from "shared-types"
+
+console.log("✅ 前端拿到 ErrorCode =", ErrorCode.KB_NOT_FOUND)
+// 测试类型推导
+const badInput = { name: "ab" }  // 长度 2,小于 3
+const result = KnowledgeBaseCreateSchema.safeParse(badInput)
+console.log(result)  // ← 期望 success: false
+</script>
 
 <template>
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+
 </template>
 
 <style scoped></style>
