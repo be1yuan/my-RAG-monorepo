@@ -4,6 +4,7 @@ import { config } from "./config"
 import { checkDbConnection, closeDb } from './db/client'  
 import { errorHandler} from "./errors"
 import { kbsRouter } from "./routes/kbs"
+import { rateLimit } from "./middleware/rate-limit"
 
 // ⭐ 声明 Hono context 变量类型
 type AppEnv = {
@@ -24,6 +25,8 @@ app.use("*", async (c, next) => {
   await next()
 })
 
+// ⭐ 限流中间件(挂载顺序:在路由之前,errorHandler 之后)
+app.use('/api/*', rateLimit())
 // 全局错误兜底(综合 P0-4)
 app.onError(errorHandler)
 

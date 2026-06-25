@@ -71,6 +71,7 @@ const ConfigSchema = z.object({
     RATE_LIMIT_PER_MIN: z.coerce.number().int().min(1).default(30),  // 每用户/IP 每分钟 30 次
     RATE_LIMIT_MESSAGE_PER_MIN: z.coerce.number().int().min(1).default(10),  // 问答更严格
 
+
     // ============ 文件存储 ============
     UPLOAD_DIR: z.string().default('./uploads'),
     UPLOAD_DIR_MAX_SIZE: z.coerce.number().int().min(1024).default(10737418240),  // 10GB

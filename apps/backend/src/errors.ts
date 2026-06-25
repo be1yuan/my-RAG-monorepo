@@ -33,7 +33,7 @@ export const Errors = {
         new ApiError(ErrorCode.INVALID_PARAMS, 400, 'Request validation failed','errors.invalid_params', 
             details),
 
-    rawLimit: (retryAfterSec?: number) => 
+    rateLimit: (retryAfterSec?: number) => 
         new ApiError(ErrorCode.RATE_LIMIT_EXCEEDED, 429, 'Too many requests','errors.rate_limit_exceeded', 
             retryAfterSec ? { retry_after_seconds: retryAfterSec } : undefined),
 
@@ -65,6 +65,9 @@ export const Errors = {
             { required, loaded }),
     internal: (msg: string = "Internal server error") =>
         new ApiError(ErrorCode.INTERNAL_ERROR, 500, msg,"errors.internal"),
+    kbOwnerMismatch: (kbOwnerId: string, currentUserId: string | null) =>
+        new ApiError(ErrorCode.KB_OWNER_MISMATCH, 403, `Current user (${currentUserId ?? "anonymous"}) is not the owner of this KB`,"errors.kb_owner_mismatch", 
+            { kb_owner_id: kbOwnerId, current_user_id: currentUserId }),
 }
 
 // 3. Hono 全局 Error Middleware
