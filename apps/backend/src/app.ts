@@ -1,7 +1,8 @@
 import { Hono } from "hono"
 import { serve } from "@hono/node-server"
+import { cors } from "hono/cors"   // ⭐ CORS 中间件
 import { config } from "./config"
-import { checkDbConnection, closeDb } from './db/client'  
+import { checkDbConnection, closeDb } from './db/client'
 import { errorHandler} from "./errors"
 import { kbsRouter } from "./routes/kbs"
 import { rateLimit } from "./middleware/rate-limit"
@@ -17,6 +18,20 @@ type AppEnv = {
 const app = new Hono<AppEnv>()
 
 // ============ 全局中间件 ============
+// ⭐ CORS(必须放最前面,让 OPTIONS 预检也走 CORS)
+app.use("*", cors({
+  origin: [
+    "http://localhost:5173",      // Vite dev
+    "http://localhost:4173",      // Vite preview
+    "http://47.93.13.223:2333",   // 公网部署
+  ],
+  credentials: true,
+  allowMethods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+  allowHeaders: ["Content-Type", "X-User-Id", "X-Request-Id"],
+  exposeHeaders: ["X-Request-Id"],
+  maxAge: 86400,
+}))
+
 app.use("*", async (c, next) => {
   // 给每个请求一个 ID(用于日志关联)
   const requestId = c.req.header('X-Request-Id') || crypto.randomUUID()

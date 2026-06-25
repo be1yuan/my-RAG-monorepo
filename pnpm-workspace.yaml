@@ -1,7 +1,7 @@
 packages:
   - "apps/*"
   - "packages/*"
-  - "!**/test/**" 
+  - "!**/test/**"
 link-workspace-packages: true
 onlyBuiltDependencies:
   - esbuild
@@ -10,3 +10,5 @@ onlyBuiltDependencies:
 shared-workspace-lockfile: true
 # 保存精确版本
 save-workspace-protocol: true
+allowBuilds:
+  '@parcel/watcher': true

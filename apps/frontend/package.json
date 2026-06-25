@@ -17,6 +17,7 @@
     "format": "prettier --write --experimental-cli src/"
   },
   "dependencies": {
+    "element-plus": "^2.8.0",
     "pinia": "^3.0.4",
     "shared-types": "workspace:*",
     "vue": "^3.5.38",
@@ -42,7 +43,10 @@
     "npm-run-all2": "^9.0.2",
     "oxlint": "~1.69.0",
     "prettier": "3.8.4",
+    "sass-embedded": "^1.100.0",
     "typescript": "~6.0.0",
+    "unplugin-auto-import": "^21.0.0",
+    "unplugin-vue-components": "^32.1.0",
     "vite": "^8.0.16",
     "vite-plugin-vue-devtools": "^8.1.2",
     "vitest": "^4.1.9",

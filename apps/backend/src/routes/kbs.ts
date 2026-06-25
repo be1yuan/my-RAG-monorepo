@@ -23,6 +23,61 @@ function getUserId(c: any): string | null {
     return c.req.header("x-user-id") || null;
 }
 
+// ============ Helper: API snake_case → Drizzle camelCase ============
+// 共享类型保持对外 snake_case 契约,但 Drizzle schema 是 camelCase 字段名
+// 直接 spread parsed.data 会导致 Drizzle 静默忽略所有 unknown key(只落默认值)
+type KbApiFields = {
+    name: string
+    description?: string
+    embedding_model: string
+    chat_model: string
+    chunk_size: number
+    chunk_overlap: number
+}
+type KbApiPartial = Partial<KbApiFields>
+
+function toKbInsertData(snake: KbApiFields) {
+    return {
+        name: snake.name,
+        description: snake.description,
+        embeddingModel: snake.embedding_model,
+        chatModel: snake.chat_model,
+        chunkSize: snake.chunk_size,
+        chunkOverlap: snake.chunk_overlap,
+    }
+}
+
+function toKbUpdateData(snake: KbApiPartial): Record<string, unknown> {
+    const out: Record<string, unknown> = {}
+    if (snake.name !== undefined) out.name = snake.name
+    if (snake.description !== undefined) out.description = snake.description
+    if (snake.embedding_model !== undefined) out.embeddingModel = snake.embedding_model
+    if (snake.chat_model !== undefined) out.chatModel = snake.chat_model
+    if (snake.chunk_size !== undefined) out.chunkSize = snake.chunk_size
+    if (snake.chunk_overlap !== undefined) out.chunkOverlap = snake.chunk_overlap
+    return out
+}
+
+// ============ Helper: Drizzle 行 → API snake_case ============
+// 共享类型对外是 snake_case + ownerId(camelCase),
+// 但 Drizzle schema 是全 camelCase,需要转换保持 API 契约一致
+type KbRow = typeof knowledgeBases.$inferSelect
+
+function toKbApi(row: KbRow) {
+    return {
+        id: row.id,
+        name: row.name,
+        description: row.description,
+        ownerId: row.ownerId,                       // 共享类型 ownerId 是 camelCase
+        embedding_model: row.embeddingModel,
+        chat_model: row.chatModel,
+        chunk_size: row.chunkSize,
+        chunk_overlap: row.chunkOverlap,
+        created_at: row.createdAt.toISOString(),    // Date → ISO 字符串
+        updated_at: row.updatedAt.toISOString(),
+    }
+}
+
 // ============ GET /api/kbs 列表 ============
 router.get('/api/kbs', async (c) => {
     const rows = await db
@@ -30,7 +85,7 @@ router.get('/api/kbs', async (c) => {
         .from(knowledgeBases)
         .orderBy(desc(knowledgeBases.createdAt))
         .limit(100)
-    return c.json({kbs: rows})
+    return c.json({kbs: rows.map(toKbApi)})
 })
 
 // ============ POST /api/kbs 创建 ===========
@@ -58,9 +113,9 @@ router.post('/api/kbs', async (c) => {
     try {
         const [kb] = await db
             .insert(knowledgeBases)
-            .values({...parsed.data, ownerId})
+            .values({...toKbInsertData(parsed.data), ownerId})
             .returning()
-        return c.json(kb, 201)
+        return c.json(toKbApi(kb), 201)
     } catch (e: any) {
         pgUniqueViolationToApiError(e, () => Errors.kbAlreadyExists(parsed.data.name));
     }
@@ -79,7 +134,7 @@ router.get('/api/kbs/:kbId', async (c) => {
         .limit(1)
     if (!kb) throw Errors.kbNotFound(kbId)
     assertKbOwner(kb, getUserId(c))
-    return c.json(kb)
+    return c.json(toKbApi(kb))
 })
 
 // ⭐ PATCH /api/kbs/:kbId 更新(新增)
@@ -107,12 +162,12 @@ router.patch('/api/kbs/:kbId', async (c) => {
     const [kb] = await db
         .update(knowledgeBases)
         .set({
-            ...parsed.data,
+            ...toKbUpdateData(parsed.data),
             updatedAt: new Date(),
         })
         .where(eq(knowledgeBases.id, kbId))
         .returning()
-    return c.json(kb)
+    return c.json(toKbApi(kb))
 })
 
 // ⭐ DELETE /api/kbs/:kbId 删除(新增)

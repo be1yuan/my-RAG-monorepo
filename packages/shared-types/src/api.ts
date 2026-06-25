@@ -12,6 +12,7 @@ export const KnowledgeBaseSchema = z.object({
     id: UuidSchema,
     name: z.string().min(1).max(100),
     description: z.string().nullable().optional(),
+    ownerId: UuidSchema.nullable().optional(),  // ⭐ M1: 加上 ownerId
     embedding_model: z.string(),
     chat_model: z.string(),
     chunk_size: z.number().int().min(128).max(2048),

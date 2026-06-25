@@ -16,7 +16,7 @@
         "allowSyntheticDefaultImports": true,
         "resolveJsonModule": true,
         "isolatedModules": true,
-        "verbatimModuleSyntax": true,
+        //"verbatimModuleSyntax": true,
         "skipLibCheck": true,
 
         /* 输出 */
