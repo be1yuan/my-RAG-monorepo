@@ -15,10 +15,6 @@ import { Worker } from 'worker_threads'
 import * as path from 'path'
 import { fileURLToPath } from 'url';
 
-const FONT_PATH = path.resolve(
-    process.cwd(),
-    'node_modules/pdfjs-dist/standard_fonts/'
-) + '/'
 
 type FileType = 'pdf' | 'docx' | 'md' | 'txt'
 

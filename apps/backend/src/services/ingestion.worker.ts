@@ -11,14 +11,7 @@ import { documents, chunks } from '../db/schema'
 import { eq } from 'drizzle-orm'
 import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters'
 import { PDFParse } from 'pdf-parse'
-import * as path from 'path'
-
-const FONT_PATH = path.resolve(
-    process.cwd(),
-    'node_modules/pdfjs-dist/standard_fonts/'
-) + '/'
-
-const EMBEDDING_DIM = 768
+import { embedBatch } from './embedding'
 
 type FileType = 'pdf' | 'docx' | 'md' | 'txt'
 async function extractText (filePath: string, fileType: FileType): Promise<string> {
@@ -60,8 +53,25 @@ async function processOne (docId: string): Promise<{chunkCount: number}> {
             chunkSize: 1000,
             chunkOverlap: 100,
         })
-        const splitTexts: string[] = await splitter.splitText(text)
-        const zeroVector: number[] = new Array(EMBEDDING_DIM).fill(0)
+        const splitTexts: string[] =  await splitter.splitText(text)
+        // 5. ⭐ Step 3:调 LM Studio embedding
+        let embeddings: number[][]
+        try {
+            embeddings = await embedBatch(splitTexts)
+            console.log(`[worker] embedded doc=${docId} count=${embeddings.length}`)
+        } catch (e: any) {
+            // embedding 失败 → 整个 doc 标记 failed(MVP 简化:不重试)
+            await db
+                .update(documents)
+                .set({
+                    status: 'failed',
+                    errorMsg: `embedding failed: ${e?.message ?? 'unknown'}`,
+                    processedAt: new Date(),
+                })
+                .where(eq(documents.id, docId))
+            throw e
+        }
+        // 6. 写 chunks(用真实 embedding)
         const chunkRows = splitTexts.map((content, i) => ({
             documentId: docId,
             kbId: doc.kbId,
@@ -73,8 +83,9 @@ async function processOne (docId: string): Promise<{chunkCount: number}> {
                 source: doc.filename,
                 chunk_size: 512,
                 chunk_overlap: 64,
+                embedding_model: 'text-embedding-nomic-embed-text-v1.5',
             } as Record<string, unknown>,
-            embedding: zeroVector,
+            embedding: embeddings[i],  
         }))
 
         if (chunkRows.length > 0) await db.insert(chunks).values(chunkRows)
