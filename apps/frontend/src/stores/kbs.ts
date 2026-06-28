@@ -45,14 +45,40 @@ export const useKbStore = defineStore('kbs', () => {
 
   const getById = (id: string) => computed(() => kbs.value.find((k) => k.id === id))
 
+  // 1. 加 state
+  const status = ref<{
+    documentCount: number
+    chunkCount: number
+    totalSize: number
+    embeddingModel: string
+    chatModel: string
+  } | null>(null)
+  // 2. 加 action
+  async function loadStatus(kbId: string) {
+    try {
+      const data = await kbsApi.getStatus(kbId)
+      status.value = {
+        documentCount: data.document_count,
+        chunkCount: data.chunk_count,
+        totalSize: data.total_size,
+        embeddingModel: data.embedding_model,
+        chatModel: data.chat_model,
+      }
+    } catch (e) {
+      console.error('loadStatus failed:', e)
+    }
+  }
+
   return {
     kbs,
     loading,
     error,
+    status,
     loadList,
     create,
     update,
     remove,
     getById,
+    loadStatus,
   }
 })

@@ -36,7 +36,7 @@ export const KnowledgeBaseUpdateSchema = KnowledgeBaseCreateSchema.partial()
 export type KnowledgeBaseUpdate = z.infer<typeof KnowledgeBaseUpdateSchema>
 
 export const KnowledgeBaseDetailSchema = KnowledgeBaseSchema.extend({
-    stats: z.object({
+    status: z.object({
         document_count: z.number().int(),
         chunk_count: z.number().int(),
         total_size_bytes: z.number().int(),

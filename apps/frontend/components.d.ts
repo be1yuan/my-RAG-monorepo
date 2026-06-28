@@ -11,6 +11,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    Documents: typeof import('./src/components/KbDetails/documents.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCard: typeof import('element-plus/es')['ElCard']
     ElCon: typeof import('element-plus/es')['ElCon']
@@ -28,6 +29,11 @@ declare module 'vue' {
     ElSpinner: typeof import('element-plus/es')['ElSpinner']
     ElTable: typeof import('element-plus/es')['ElTable']
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
+    KDdocuments: typeof import('./src/components/KbDetails/KDdocuments.vue')['default']
+    KDretrieval: typeof import('./src/components/KbDetails/KDretrieval.vue')['default']
+    KDretrival: typeof import('./src/components/KbDetails/KDretrival.vue')['default']
+    KDsetting: typeof import('./src/components/KbDetails/KDsetting.vue')['default']
+    Nav: typeof import('./src/components/nav.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }

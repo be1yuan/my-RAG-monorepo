@@ -28,4 +28,13 @@ export const kbsApi = {
     apiFetch<void>(`/api/kbs/${id}`, {
       method: 'DELETE',
     }),
+
+  getStatus: (id: string) =>
+    apiFetch<{
+      document_count: number
+      chunk_count: number
+      total_size: number      // bytes
+      embedding_model: string
+      chat_model: string
+    }>(`/api/kbs/${id}/status`),
 }

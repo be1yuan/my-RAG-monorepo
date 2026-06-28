@@ -4,8 +4,8 @@ import {
     KnowledgeBaseUpdateSchema
 } from "shared-types"
 import { db } from '../db/client'
-import { knowledgeBases } from "../db/schema"
-import { eq, desc } from "drizzle-orm"
+import { knowledgeBases, chunks, documents } from "../db/schema"
+import { eq, desc, sum, count } from "drizzle-orm"
 import { Errors, pgUniqueViolationToApiError } from "../errors"
 
 
@@ -190,6 +190,39 @@ router.delete('/api/kbs/:kbId', async (c) => {
         .delete(knowledgeBases)
         .where(eq(knowledgeBases.id, kbId))
     return c.body(null, 204)
+})
+
+router.get('/api/kbs/:kbId/status', async (c) => {
+    const kbId = c.req.param('kbId')
+    if (!kbId) throw Errors.invalidParams({ reason: 'kbId 必须' })
+    const [kb] = await db
+        .select()
+        .from(knowledgeBases)
+        .where(eq(knowledgeBases.id, kbId))
+        .limit(1)
+    if (!kb) throw Errors.kbNotFound(kbId)
+    assertKbOwner(kb, getUserId(c))
+    // 聚合 documents:文档数 + 总大小
+    const docStatus = await db
+        .select({
+        documentCount: count(),
+        totalSize: sum(documents.fileSize),
+        })
+        .from(documents)
+        .where(eq(documents.kbId, kbId))
+    // 聚合 chunks:切片数(通过 documents 关联)
+    const chunkStatus = await db
+        .select({ chunkCount: count() })
+        .from(chunks)
+        .innerJoin(documents, eq(chunks.documentId, documents.id))
+        .where(eq(documents.kbId, kbId))
+    return c.json({
+        document_count: Number(docStatus[0]?.documentCount ?? 0),
+        chunk_count: Number(chunkStatus[0]?.chunkCount ?? 0),
+        total_size: Number(docStatus[0]?.totalSize ?? 0),
+        embedding_model: kb.embeddingModel,
+        chat_model: kb.chatModel,
+    })
 })
 
 export { router as kbsRouter };

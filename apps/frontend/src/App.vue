@@ -1,17 +1,17 @@
 <script setup lang="ts">
-
+import Nav from '@/components/nav.vue'
 </script>
 
 <template>
-  <el-config-provider>
-    <router-view></router-view>
-  </el-config-provider>
+  <div class="app-root">
+    <Nav />
+    <router-view />
+  </div>
 </template>
 
 <style scoped lang="scss">
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: #f5f7fa;
+.app-root {
+  min-height: 100vh;
+  background: var(--bg);
 }
 </style>
