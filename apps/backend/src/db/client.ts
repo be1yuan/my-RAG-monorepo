@@ -6,8 +6,10 @@ import * as schema from './schema'
 //1. 连接数据库
 export const pool = new Pool({
     connectionString: config.DATABASE_URL,
-    min: 2,
-    max: 20,
+     keepAlive: true,                                    // ⭐ 防止 NAT/防火墙断连
+    idleTimeoutMillis: 30000,                            // ⭐ 30s 空闲超时(默认 10s 太短)
+    connectionTimeoutMillis: 5000,                       // ⭐ 5s 连接超时
+    max: 10,                                             // ⭐ 限制 pool 最大连接数
 })
 
 //2. 创建 Drizzle 实例

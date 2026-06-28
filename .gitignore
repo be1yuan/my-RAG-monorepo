@@ -48,3 +48,8 @@ playwright-report/
 .env.development
 .env.production
 .env.test
+
+apps/backend/uploads/
+
+apps/backend/3rd comments.pdf
+apps/backend/Cover Letter.pdf

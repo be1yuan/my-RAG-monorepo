@@ -6,6 +6,9 @@ import { checkDbConnection, closeDb } from './db/client'
 import { errorHandler} from "./errors"
 import { kbsRouter } from "./routes/kbs"
 import { rateLimit } from "./middleware/rate-limit"
+import { documentsRouter } from "./routes/documents"
+import { startIngestionWorker } from "./services/ingestion"
+
 
 // ⭐ 声明 Hono context 变量类型
 type AppEnv = {
@@ -16,6 +19,9 @@ type AppEnv = {
 
 // ============ 创建 app ============
 const app = new Hono<AppEnv>()
+
+// 启动 ingestion worker
+startIngestionWorker()
 
 // ============ 全局中间件 ============
 // ⭐ CORS(必须放最前面,让 OPTIONS 预检也走 CORS)
@@ -60,7 +66,8 @@ app.get("/api/health", async (c) => {
   })
 })
 
-app.route("/", kbsRouter)
+app.route('/', kbsRouter)
+app.route('/', documentsRouter)
 
 //列出知识库
 // app.get("/api/kbs", async (c) => {
