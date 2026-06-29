@@ -95,7 +95,11 @@ export const chunks = pgTable('chunks', {
     index('idx_chunks_document_id').on(table.documentId),
     index('idx_chunks_kb_id').on(table.kbId),
     // HNSW 向量索引在 migration 中用 raw SQL 加
+    index('idx_chunks_embedding_hnsw')
+        .using('hnsw', table.embedding.op('vector_cosine_ops')),
     // GIN 全文索引在 migration 中用 raw SQL 加
+    index('idx_chunks_content_tsv_gin')
+        .using('gin', table.contentTsv),
 ])
 
 // ============================================================

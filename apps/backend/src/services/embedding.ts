@@ -54,3 +54,14 @@ async function embedOne (texts: string[]): Promise<number[][]> {
 }
 
 export { EMBEDDING_DIM, BATCH_SIZE, LMSTUDIO_BASE_URL, EMBEDDING_MODEL }
+
+/**
+ * 单条 query embedding(检索时用,worker 调 embedBatch)
+ */
+export async function embedQuery (text: string): Promise<number[]> {
+    const [embedding] = await embedBatch([text])
+    if (!embedding) {
+        throw new Error('embedQuery returned empty')
+    }
+    return embedding
+}

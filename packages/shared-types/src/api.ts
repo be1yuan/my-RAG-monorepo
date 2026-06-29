@@ -188,3 +188,14 @@ export const EmbeddingJobSchema = z.object({
     created_at: z.string().datetime(),
 })
 export type EmbeddingJob = z.infer<typeof EmbeddingJobSchema>
+
+// ============================================================
+// chat (m3)
+// ============================================================
+export const ChatRequestSchema = z.object({
+    question: z.string().min(1).max(4000),
+    top_k: z.number().int().min(1).max(20).optional(),
+    temperature: z.number().min(0).max(2).optional(),
+    max_tokens: z.number().int().min(1).max(8192).optional()
+})
+export type ChatRequest = z.infer<typeof ChatRequestSchema>
