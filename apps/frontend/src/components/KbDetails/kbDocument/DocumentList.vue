@@ -1,17 +1,19 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, defineProps } from 'vue'
+import { onMounted, onUnmounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import type { Document } from 'shared-types'
+import type { Document, DocumentStatus } from 'shared-types'
 import { useDocumentsStore } from '@/stores/documents'
 
 const props = defineProps<{ kbId: string }>()
 const store = useDocumentsStore()
-function progressPercent(doc: Document): number {
-  if (doc.status === 'ready') return 100
-  if (doc.status === 'failed') return 0
-  // pending/processing 阶段:根据 chunk_count 估算(假设最终 ~20 chunks/页)
-  // 暂用 5/50 占位
-  return doc.status === 'pending' ? 5 : 50
+function progressPercent(status: DocumentStatus): number {
+  switch (status) {
+    case 'pending': return 5
+    case 'processing': return 50
+    case 'ready': return 100
+    case 'failed': return 0
+    default: return 0
+  }
 }
 
 onMounted(async () => {
@@ -23,7 +25,7 @@ onUnmounted(() => {
   store.unsubscribeEvents()
 })
 
-async function handleDelete(doc: Document) {
+async function handleDelete(doc: Document): Promise<void> {
   try {
     await ElMessageBox.confirm(`确认删除文档 ${doc.filename}?`, '确认删除', {
       type: 'warning',
@@ -35,7 +37,7 @@ async function handleDelete(doc: Document) {
   } catch(e) {
     // 取消
     if (e instanceof Error && e.message === 'User canceled the operation') {
-      return ElMessage.error(`删除失败: ${e.message || e}`)
+      ElMessage.error(`删除失败: ${e.message || e}`)
     } else {
       ElMessage.warning('取消删除')
     }

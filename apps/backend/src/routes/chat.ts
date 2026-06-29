@@ -87,8 +87,8 @@ chatRouter.post('/api/kbs/:kbId/chat/stream', async (c) => {
                     }
                     if (c2.done) {
                         await stream.writeSSE({
-                            event: 'end',
-                            data: JSON.stringify({type: 'done', total_chunks: totalChunks}),
+                            event: 'done',
+                            data: JSON.stringify({type: 'done', total_tokens: totalChunks}),
                         })
                     }
                 }

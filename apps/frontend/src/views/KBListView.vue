@@ -4,16 +4,15 @@ import { useRouter } from "vue-router"
 import { ApiError } from "@/api/client"
 import type { KnowledgeBase } from "shared-types"
 import { useKbStore } from "@/stores/kbs"
-import { ElMessage, ElMessageBox } from "element-plus"
+import { ElMessage } from "element-plus"
 import { fmtDate } from "@/utils/index"
-import type { FormInstance } from "element-plus"
 
 const store = useKbStore()
 const router = useRouter()
+const dialogVisible = ref(false)
+
 const kbsList = computed(() => store.kbs)
 
-const dialogVisible = ref(false)
-const formRef = ref<FormInstance>()
 const form = reactive({
   name: "",
   description: "",
@@ -132,7 +131,7 @@ function goDetail(kb: KnowledgeBase) {
 
     <!-- 创建弹窗 -->
     <el-dialog title="创建知识库" v-model="dialogVisible" width="500">
-        <form class="modal-body" id="create-form" ref="formRef">
+        <form class="modal-body" id="create-form">
           <div class="field">
             <label class="field-label" data-zh="名称" data-en="Name">名称</label>
             <input class="input" name="name" required maxlength="100"

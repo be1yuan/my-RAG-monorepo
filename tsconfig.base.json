@@ -20,7 +20,7 @@
         "skipLibCheck": true,
 
         /* 输出 */
-        "declaration": true,
+        "noEmit": true, 
         "declarationMap": true,
         "sourceMap": true,
         "removeComments": false,

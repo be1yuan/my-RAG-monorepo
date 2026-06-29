@@ -18,6 +18,11 @@ const router = createRouter({
       name: 'kb-detail',
       component: () => import('@/views/KBDetailView.vue'),
     },
+    {
+      path: '/chat',
+      name: 'kb-chat',
+      component: () => import('@/views/KBChatView.vue'),
+    },
   ],
 })
 

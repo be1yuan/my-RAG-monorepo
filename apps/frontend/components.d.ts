@@ -11,6 +11,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    ChatInput: typeof import('./src/components/ChatInput.vue')['default']
     DocumentList: typeof import('./src/components/KbDetails/kbDocument/DocumentList.vue')['default']
     Documents: typeof import('./src/components/KbDetails/documents.vue')['default']
     DocumentUpload: typeof import('./src/components/KbDetails/kbDocument/DocumentUpload.vue')['default']
@@ -37,6 +38,7 @@ declare module 'vue' {
     KDretrieval: typeof import('./src/components/KbDetails/KDretrieval.vue')['default']
     KDretrival: typeof import('./src/components/KbDetails/KDretrival.vue')['default']
     KDsetting: typeof import('./src/components/KbDetails/KDsetting.vue')['default']
+    MessageBubble: typeof import('./src/components/MessageBubble.vue')['default']
     Nav: typeof import('./src/components/nav.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

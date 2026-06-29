@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { defineProps } from 'vue'
 import DocumentUpload from './kbDocument/DocumentUpload.vue'
 import DocumentList from './kbDocument/DocumentList.vue'
 

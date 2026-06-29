@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type { Document } from 'shared-types'
+import type { DocumentStatusChangedEvent } from 'shared-types'
+import type { Document as KbDocument } from 'shared-types/api'
 import { documentsApi } from '@/api/documents'
 
 export const useDocumentsStore = defineStore('documents', () => {
-  const documents = ref<Document[]>([])
+  const documents = ref<KbDocument[]>([])
   const loading = ref(false)
   const error = ref<string | null>(null)
 
@@ -16,7 +17,7 @@ export const useDocumentsStore = defineStore('documents', () => {
     error.value = null
     try {
       const res = await documentsApi.list(kbId)
-      documents.value = res.documents
+      documents.value = res.documents as KbDocument[]
       error.value = null
     } catch (e: unknown) {
       error.value = (e as Error).message ?? 'Failed to load documents'
@@ -39,11 +40,12 @@ export const useDocumentsStore = defineStore('documents', () => {
     if (unsubscribe) unsubscribe()  // 清理旧订阅
     unsubscribe = documentsApi.subscribeEvents(kbId, (event, data) => {
       if (event === 'document.statusChanged') {
-        const doc = documents.value.find((d) => d.id === data.id)
+        const eventData = data as DocumentStatusChangedEvent
+        const doc = documents.value.find((d) => d.id === eventData.id)
         if (doc) {
-          doc.status = data.status
-          doc.chunk_count = data.chunk_count
-          doc.error_msg = data.error_msg
+          doc.status = eventData.status
+          doc.chunk_count = eventData.chunk_count
+          doc.error_msg = eventData.error_msg ?? null
         }
       }
     })

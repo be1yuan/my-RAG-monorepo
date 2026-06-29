@@ -6,7 +6,6 @@ import { kbsApi } from "@/api/kbs"
 import { ApiError } from "@/api/client"
 import type { KnowledgeBase } from "shared-types"
 import { fmtDate } from "@/utils/index"
-import type { FormInstance } from "element-plus"
 import KDretrieval from "@/components/KbDetails/KDretrieval.vue"
 import KDsetting from "@/components/KbDetails/KDsetting.vue"
 import KDdocuments from "@/components/KbDetails/KDdocuments.vue"
@@ -21,7 +20,7 @@ const id = route.params.id as string
 const kb = ref<KnowledgeBase | null>(null)
 const loading = ref(false)
 const editing = ref(false)
-const formRef = ref<FormInstance>()
+
 const form = reactive({
   name: "",
   description: "",
@@ -130,6 +129,9 @@ async function handleDelete() {
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
             <span data-zh="删除" data-en="Delete">删除</span>
           </button>
+          <el-button type="primary" size="large" @click="$router.push({ path: '/chat', query: { kb: id } })">
+            开始问答
+          </el-button>
         </div>
       </header>
 
@@ -176,7 +178,7 @@ async function handleDelete() {
 
 
       <el-dialog v-model="editing" title="编辑知识库" width="500">
-        <form class="modal-body" id="create-form" ref="formRef">
+        <form class="modal-body" id="create-form">
           <div class="field">
             <label class="field-label" data-zh="名称" data-en="Name">名称</label>
             <input class="input" name="name" required maxlength="100"
