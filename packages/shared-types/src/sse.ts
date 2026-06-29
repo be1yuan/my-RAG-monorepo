@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { CitationSchema } from './api'
+import { CitationSchema, DocumentStatusSchema, UuidSchema } from './api'
 import { ErrorResponseSchema } from './errors'
 
 // ============================================================
@@ -40,3 +40,12 @@ export function parseSSEData(raw: string): SSEEvent | null {
         return null;
     }
 }
+
+export const DocumentStatusChangedEventSchema = z.object({
+    id: UuidSchema,
+    status: DocumentStatusSchema,
+    chunk_count: z.number().int(),
+    error_msg: z.string().nullable().optional(),
+    timestamp: z.number().int(),
+})
+export type DocumentStatusChangedEvent = z.infer<typeof DocumentStatusChangedEventSchema>

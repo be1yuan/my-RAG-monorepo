@@ -11,7 +11,9 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    DocumentList: typeof import('./src/components/KbDetails/kbDocument/DocumentList.vue')['default']
     Documents: typeof import('./src/components/KbDetails/documents.vue')['default']
+    DocumentUpload: typeof import('./src/components/KbDetails/kbDocument/DocumentUpload.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCard: typeof import('element-plus/es')['ElCard']
     ElCon: typeof import('element-plus/es')['ElCon']
@@ -26,9 +28,11 @@ declare module 'vue' {
     ElIcon: typeof import('element-plus/es')['ElIcon']
     ElInput: typeof import('element-plus/es')['ElInput']
     ElPopconfirm: typeof import('element-plus/es')['ElPopconfirm']
+    ElProgress: typeof import('element-plus/es')['ElProgress']
     ElSpinner: typeof import('element-plus/es')['ElSpinner']
     ElTable: typeof import('element-plus/es')['ElTable']
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
+    ElUpload: typeof import('element-plus/es')['ElUpload']
     KDdocuments: typeof import('./src/components/KbDetails/KDdocuments.vue')['default']
     KDretrieval: typeof import('./src/components/KbDetails/KDretrieval.vue')['default']
     KDretrival: typeof import('./src/components/KbDetails/KDretrival.vue')['default']

@@ -21,7 +21,7 @@ async function extractText (filePath: string, fileType: FileType): Promise<strin
             data: new Uint8Array(buffer),
         })
         const result = await parser.getText()
-        console.log(`[debug] file=${filePath} text_len=${result.text.length} pages=${result.pages?.length}`)
+        // console.log(`[debug] file=${filePath} text_len=${result.text.length} pages=${result.pages?.length}`)
         return result.text
     } 
     if (fileType === 'docx') {

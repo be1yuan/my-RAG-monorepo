@@ -12,14 +12,14 @@ import { Errors, pgUniqueViolationToApiError } from "../errors"
 const router = new Hono()
 // ============ Helper:owner 校验 ============
 // KB 有 owner_id 时,当前 userId 必须匹配;KB 没 owner 时跳过(MVP 简化)
-function assertKbOwner(kb: { ownerId: string | null, }, currentUserId: string | null) {
+export function assertKbOwner(kb: { ownerId: string | null, }, currentUserId: string | null) {
     if (kb.ownerId && kb.ownerId !== currentUserId) {
         throw Errors.kbOwnerMismatch(kb.ownerId, currentUserId)
     }
 }
 
 
-function getUserId(c: any): string | null {
+export function getUserId(c: any): string | null {
     return c.req.header("x-user-id") || null;
 }
 

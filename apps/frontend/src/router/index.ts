@@ -5,6 +5,11 @@ const router = createRouter({
   routes: [
     {
       path: '/',
+      name: 'index',
+      component: () => import('@/views/index.vue'),
+    },
+    {
+      path: '/kbs',
       name: 'kb-list',
       component: () => import('@/views/KBListView.vue'),
     },

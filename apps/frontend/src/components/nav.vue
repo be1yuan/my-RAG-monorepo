@@ -1,15 +1,20 @@
 <script setup lang="ts">
-import { useRouter, useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
+const router = useRouter()
 const navItems = [
   { label: '总览', en: 'Overview', path: '/' },
-  { label: '知识库', en: 'Knowledge Bases', path: '/', matchName: 'kb-list' },
-  { label: '问答', en: 'Chat', path: '/', matchName: 'chat' },
+  { label: '知识库', en: 'Knowledge Bases', path: '/kbs', matchName: 'kb-list' },
+  { label: '问答', en: 'Chat', path: '/chat', matchName: 'chat' },
 ]
 function isActive(matchName: string | undefined) {
   if (!matchName) return false
   return route.name === matchName
+}
+
+function handleClick(item: { path: string }) {
+  router.push(item.path)
 }
 </script>
 
@@ -26,6 +31,7 @@ function isActive(matchName: string | undefined) {
           :key="item.path"
           :to="item.path"
           :class="{ active: isActive(item.matchName) }"
+          @click="handleClick(item)"
         >
           {{ item.label }}
         </router-link>
