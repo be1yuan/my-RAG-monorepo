@@ -9,6 +9,7 @@ import { rateLimit } from "./middleware/rate-limit"
 import { documentsRouter } from "./routes/documents"
 import { startIngestionWorker } from "./services/ingestion"
 import { chatRouter } from "./routes/chat"
+import { conversationsRouter } from "./routes/conversations"
 
 
 // ⭐ 声明 Hono context 变量类型
@@ -69,6 +70,7 @@ app.get("/api/health", async (c) => {
 
 app.route('/', kbsRouter)
 app.route('/', documentsRouter)
+app.route('/', conversationsRouter)
 app.route('/', chatRouter)
 
 //列出知识库
