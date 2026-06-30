@@ -6,7 +6,7 @@ import { db } from '../db/client'
 import { sql } from 'drizzle-orm'
 import { embedQuery } from './embedding'
 
-export interface RetrievaedChunk {
+export interface RetrievedChunk {
     id: string
     document_id: string
     kb_id: string
@@ -21,7 +21,7 @@ export async function retrieveChunks (
     kbId: string,
     query: string,
     topK: number = 5,
-): Promise<RetrievaedChunk[]> {
+): Promise<RetrievedChunk[]> {
     //1 计算 query embedding
     const queryEmbedding = await embedQuery(query)
     // pgvector 接收 string 格式

@@ -3,7 +3,14 @@
  * - system: 角色 + 规则(必须基于参考资料,不编造)
  * - user: 参考资料(带编号) + 问题
  */
-import type { RetrievaedChunk } from "./retrieval"
+/**
+ * 拼 LLM messages 数组(M3 单轮 → M4 多轮)
+ * - system prompt 4 规则
+ * - user prompt:参考资料(带编号)+ 历史对话(可选)+ 当前问题
+ * - LLM 接收完整 messages 数组,自动处理多轮上下文
+ */
+import type { RetrievedChunk } from "./retrieval"
+import type { Message } from '../db/schema'
 
 export interface ChatPrompt {
     systemPrompt: string
@@ -12,7 +19,7 @@ export interface ChatPrompt {
 
 export function buildChatPrompt(
     question: string,
-    chunks: RetrievaedChunk[],
+    chunks: RetrievedChunk[],
 ): ChatPrompt {
     const systemPrompt = `你是一个基于知识库的问答助手。请严格基于提供的"参考资料"回答用户问题:
         1. 答案必须从参考资料中提取,不要编造信息
@@ -27,4 +34,45 @@ export function buildChatPrompt(
         ).join('\n\n---\n\n')
     const userPrompt = `参考资料:\n${contextText}\n\n问题: ${question}\n\n回答:`
     return { systemPrompt, userPrompt }
+}
+
+export interface ChatMessage {
+    role: 'system' | 'user' | 'assistant'
+    content: string
+}
+
+export function buildChatMessages(
+    question: string,
+    chunks: RetrievedChunk[],
+    historyDbMessages: Message[] = [],
+): ChatMessage[] {
+    const systemPrompt = `你是一个基于知识库的问答助手。请严格基于提供的"参考资料"回答用户问题:
+        1. 答案必须从参考资料中提取,不要编造信息
+        2. 如参考资料不包含答案,直接说"参考资料中没有相关信息"
+        3. 回答末尾用 [1] [2] [3] 标注引用源(对应参考资料的编号)
+        4. 用中文回答,简洁清晰`
+
+    const contextText = chunks.length === 0
+        ? '(无相关参考资料)'
+        : chunks.map((chunk, i) =>
+            `[${i + 1}] 文件: ${chunk.filename}\n${chunk.content}`
+        ).join('\n\n---\n\n')
+
+    const historyText = historyDbMessages.length > 0
+        ? '\n\n【历史对话:】\n' + historyDbMessages.map((msg) =>
+            `${msg.role === 'user' ? '用户' : 'AI'}: ${msg.content.slice(0, 500)}`
+        ).join('\n\n')
+        : ''
+
+    const userPrompt = `参考资料:\n${contextText}\n${historyText}\n\n问题: ${question}\n\n回答:`
+
+    return [
+        { role: 'system', content: systemPrompt},
+        // ⭐ 多轮历史(排除 system 消息,只保留 user/assistant)
+        ...historyDbMessages
+            .filter((msg) => msg.role !== 'system')
+            .map(msg => ({ role: msg.role as 'user' | 'assistant', content: msg.content })),
+        // 当前 user messages(包含RAG context)
+        { role: 'user', content: userPrompt },
+    ]
 }

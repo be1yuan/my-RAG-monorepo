@@ -199,3 +199,8 @@ export const ChatRequestSchema = z.object({
     max_tokens: z.number().int().min(1).max(8192).optional()
 })
 export type ChatRequest = z.infer<typeof ChatRequestSchema>
+// M4 扩展:支持多轮对话
+export const ChatRequestWithConvSchema = ChatRequestSchema.extend({
+    conversation_id: UuidSchema.optional(),
+})
+export type ChatRequestWithConv = z.infer<typeof ChatRequestWithConvSchema>
